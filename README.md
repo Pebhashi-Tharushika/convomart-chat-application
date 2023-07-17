@@ -10,7 +10,7 @@ A simple public chat application for desktop.
 - JavaFX (OpenJFX): Gluon Scene Builder
 
 ### Application Preview
-![](asset/login-page2.png)
+![](asset/login-page.png)
 ![](asset/chat-view.png)
 
 ### License
