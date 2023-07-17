@@ -2,24 +2,24 @@ package lk.mbpt.chatapp.shared;
 
 import java.io.Serializable;
 
-public class Dep10Message implements Serializable {
-    private Dep10Headers header;
+public class EchatMessage implements Serializable {
+    private EchatHeaders header;
     private Object body;
     private static final long serialVersionUID = 1L;
 
-    public Dep10Message() {
+    public EchatMessage() {
     }
 
-    public Dep10Message(Dep10Headers header, Object body) {
+    public EchatMessage(EchatHeaders header, Object body) {
         this.header = header;
         this.body = body;
     }
 
-    public Dep10Headers getHeader() {
+    public EchatHeaders getHeader() {
         return header;
     }
 
-    public void setHeader(Dep10Headers header) {
+    public void setHeader(EchatHeaders header) {
         this.header = header;
     }
 
