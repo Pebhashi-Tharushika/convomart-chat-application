@@ -12,3 +12,7 @@ JavaFX (OpenJFX): Gluon Scene Builder
 ### Application Preview
 ![](asset/login-page.png)
 ![](asset/chat-view.png)
+
+### License
+
+This project is licensed under the [MIT license](LICENSE).
