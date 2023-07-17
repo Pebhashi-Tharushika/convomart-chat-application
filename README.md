@@ -6,11 +6,11 @@ A simple public chat application for desktop.
 - broadcast chat history to newly logged users
 
 ### Technologies Used
-Java : Java SE library API (Input/Output, Networking), JDK 11, Intellij Idea
-JavaFX (OpenJFX): Gluon Scene Builder
+- Java : Java SE library API (Input/Output, Networking), JDK 11, Intellij Idea
+- JavaFX (OpenJFX): Gluon Scene Builder
 
 ### Application Preview
-![](asset/login-page.png)
+![](asset/login-page2.png)
 ![](asset/chat-view.png)
 
 ### License
