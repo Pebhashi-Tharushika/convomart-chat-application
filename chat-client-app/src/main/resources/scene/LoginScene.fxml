@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+
+
+<BorderPane fx:id="borderPane" prefHeight="919.0" prefWidth="646.0" style="-fx-background-color: #383a50;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="lk.mbpt.chatapp.client.controller.loginSceneController">
+   <center>
+      <Pane maxHeight="720.0" maxWidth="400.0" prefHeight="720.0" prefWidth="400.0" style="-fx-background-color: linear-gradient(to left, rgba(34,193,195,1), rgba(253, 187, 45,1)); -fx-background-radius: 0 100px 0 120px;" BorderPane.alignment="CENTER">
+         <children>
+            <Label layoutX="123.0" layoutY="295.0" text="Enter UserName" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="20.0" />
+               </font>
+            </Label>
+            <TextField fx:id="txtUsername" layoutX="55.0" layoutY="357.0" prefHeight="31.0" prefWidth="283.0" promptText="Username" style="-fx-background-color: linear-gradient(to left, rgba(63,66,97,1), rgba(92,95,126,0.7)); -fx-text-fill: #ffffff;" />
+            <JFXButton fx:id="btnGo" defaultButton="true" layoutX="142.0" layoutY="437.0" onAction="#btnGoOnAction" prefHeight="42.0" prefWidth="110.0" style="-fx-background-color: linear-gradient(to left, rgba(92,95,126,0.7), rgba(63,66,93,1));" text="Go !" textFill="WHITE" />
+            <ImageView fitHeight="137.0" fitWidth="139.0" layoutX="128.0" layoutY="120.0" pickOnBounds="true">
+               <image>
+                  <Image url="@../icon/logo.png" />
+               </image>
+            </ImageView>
+         </children>
+      </Pane>
+   </center>
+</BorderPane>

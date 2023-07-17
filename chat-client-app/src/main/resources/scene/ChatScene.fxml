@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane fx:id="rootPane" prefHeight="831.0" prefWidth="776.0" style="-fx-background-color: #5f5f78;" stylesheets="@../css/ChatSceneStyles.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="lk.mbpt.chatapp.client.controller.ChatSceneController">
+   <children>
+      <Label fx:id="txtUserName" alignment="CENTER" contentDisplay="CENTER" layoutY="-7.0" prefHeight="57.0" prefWidth="776.0" style="-fx-background-color: #383a50;" text="Chat App" textFill="#e8dbdb" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <font>
+            <Font name="Book Antiqua" size="25.0" />
+         </font>
+      </Label>
+      <HBox alignment="CENTER" layoutY="752.0" prefHeight="79.0" prefWidth="776.0" spacing="10.0" style="-fx-background-color: #383a50;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+         <children>
+            <TextField fx:id="txtMsg" onAction="#txtMsgOnAction" prefHeight="47.0" prefWidth="326.0" promptText="Text..." style="-fx-border-radius: 20px; -fx-background-radius: 20px; -fx-background-color: #cad0db;" HBox.hgrow="ALWAYS" />
+            <ImageView fx:id="imgEmoji" fitHeight="35.0" fitWidth="35.0" onMouseClicked="#imgEmojiOnMouseClicked" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../icon/emoji.png" />
+               </image>
+            </ImageView>
+            <ImageView fx:id="imgSend" fitHeight="41.0" fitWidth="43.0" onMouseClicked="#imgSendOnMouseClicked" pickOnBounds="true">
+               <image>
+                  <Image url="@../icon/iconSent.png" />
+               </image>
+            </ImageView>
+         </children>
+         <padding>
+            <Insets left="10.0" right="10.0" />
+         </padding>
+      </HBox>
+      <ScrollPane fx:id="scrollPaneChatArea" hbarPolicy="NEVER" layoutX="10.0" layoutY="65.0" prefHeight="677.0" prefWidth="541.0" AnchorPane.bottomAnchor="89.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="225.0" AnchorPane.topAnchor="65.0">
+         <content>
+            <VBox fx:id="vboxChatArea" fillWidth="false" prefHeight="675.0" prefWidth="521.0" style="-fx-background-color: linear-gradient(to right,  #383a50, rgba(255, 255, 255,1));" />
+         </content>
+      </ScrollPane>
+      <ListView fx:id="lstUsers" focusTraversable="false" layoutX="561.0" layoutY="65.0" prefHeight="677.0" prefWidth="205.0" AnchorPane.bottomAnchor="89.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="65.0" />
+   </children>
+</AnchorPane>
