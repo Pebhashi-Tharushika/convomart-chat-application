@@ -1,8 +1,8 @@
 package lk.mbpt.chatapp.server;
 
 import lk.mbpt.chatapp.server.model.User;
-import lk.mbpt.chatapp.shared.EchatHeaders;
-import lk.mbpt.chatapp.shared.EchatMessage;
+import lk.mbpt.chatapp.shared.EChatHeaders;
+import lk.mbpt.chatapp.shared.EChatMessage;
 
 import java.io.EOFException;
 import java.io.IOException;
@@ -31,8 +31,8 @@ public class ServerAppInitializer {
             ObjectInputStream objectInputStream = new ObjectInputStream(localSocket.getInputStream());
             String newUser = "";
             try {
-                EchatMessage msg = (EchatMessage) objectInputStream.readObject();
-                if (msg.getHeader() == EchatHeaders.USERNAME) {
+                EChatMessage msg = (EChatMessage) objectInputStream.readObject();
+                if (msg.getHeader() == EChatHeaders.USERNAME) {
                     newUser = msg.getBody().toString();
                 }
             } catch (ClassNotFoundException e) {
@@ -52,11 +52,11 @@ public class ServerAppInitializer {
                     /* When a new chat message arrives, send it all the users
                     * And when a user has left, remove that user from logged users list */
                     while (true) {
-                        EchatMessage msg = (EchatMessage) ois.readObject();
-                        if (msg.getHeader() == EchatHeaders.MSG) {
+                        EChatMessage msg = (EChatMessage) ois.readObject();
+                        if (msg.getHeader() == EChatHeaders.MSG) {
                             chatHistory += String.format("%s: %s \n", user.getUsername(), msg.getBody());
                             broadcastChatHistory();
-                        } else if (msg.getHeader() == EchatHeaders.EXIT) {
+                        } else if (msg.getHeader() == EChatHeaders.EXIT) {
                             removeUser(user);
                             return;
                         }
@@ -97,7 +97,7 @@ public class ServerAppInitializer {
             new Thread(() -> {
                 try {
                     ObjectOutputStream oos = user.getObjectOutputStream();
-                    oos.writeObject(new EchatMessage(EchatHeaders.MSG, chatHistory));
+                    oos.writeObject(new EChatMessage(EChatHeaders.MSG, chatHistory));
                     oos.flush();
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -108,7 +108,7 @@ public class ServerAppInitializer {
 
     private static void sendChatHistory(User user) throws IOException {
         ObjectOutputStream oos = user.getObjectOutputStream();
-        EchatMessage msg = new EchatMessage(EchatHeaders.MSG, chatHistory);
+        EChatMessage msg = new EChatMessage(EChatHeaders.MSG, chatHistory);
         oos.writeObject(msg);
         oos.flush();
     }
@@ -126,7 +126,7 @@ public class ServerAppInitializer {
             new Thread(() -> {
                 try {
                     ObjectOutputStream oos = user.getObjectOutputStream();
-                    EchatMessage msg = new EchatMessage(EchatHeaders.USERS, loggedUserList);
+                    EChatMessage msg = new EChatMessage(EChatHeaders.USERS, loggedUserList);
                     oos.writeObject(msg);
                     oos.flush();
                 } catch (IOException e) {

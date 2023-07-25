@@ -1,5 +1,5 @@
 package lk.mbpt.chatapp.shared;
 
-public enum EchatHeaders {
+public enum EChatHeaders {
     USERNAME, MSG, USERS, EXIT
 }

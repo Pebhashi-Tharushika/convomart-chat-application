@@ -21,8 +21,8 @@ import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Callback;
-import lk.mbpt.chatapp.shared.EchatHeaders;
-import lk.mbpt.chatapp.shared.EchatMessage;
+import lk.mbpt.chatapp.shared.EChatHeaders;
+import lk.mbpt.chatapp.shared.EChatMessage;
 
 import java.io.*;
 import java.net.Socket;
@@ -95,7 +95,7 @@ public class ChatSceneController {
             /* Before starting to read from the ObjectInputStream from the server side, setup the ObjectOutputStream first from the client side too */
             oos = new ObjectOutputStream(socket.getOutputStream());
             /* send the newly logged user */
-            EchatMessage msg = new EchatMessage(EchatHeaders.USERNAME, username);
+            EChatMessage msg = new EChatMessage(EChatHeaders.USERNAME, username);
             oos.writeObject(msg);
             oos.flush();
         } catch (IOException e) {
@@ -109,7 +109,7 @@ public class ChatSceneController {
         txtMsg.getScene().getWindow().setOnCloseRequest(event -> {
             try {
                 if(ctrl!=null) ctrl.pane.getScene().getWindow().hide();
-                oos.writeObject(new EchatMessage(EchatHeaders.EXIT, null));
+                oos.writeObject(new EChatMessage(EChatHeaders.EXIT, null));
                 oos.flush();
                 if (!socket.isClosed()) socket.close();
             } catch (IOException e) {
@@ -124,14 +124,14 @@ public class ChatSceneController {
                 ois = new ObjectInputStream(socket.getInputStream());
 
                 while (true) {
-                    EchatMessage msg = (EchatMessage) ois.readObject();
-                    if (msg.getHeader() == EchatHeaders.USERS) { // Display logged users
+                    EChatMessage msg = (EChatMessage) ois.readObject();
+                    if (msg.getHeader() == EChatHeaders.USERS) { // Display logged users
                         ArrayList<String> loggedUserList = (ArrayList<String>) msg.getBody();
                         Platform.runLater(() -> {
                             lstUsers.getItems().clear();
                             lstUsers.getItems().addAll(loggedUserList);
                         });
-                    } else if (msg.getHeader() == EchatHeaders.MSG) { // Display chat history
+                    } else if (msg.getHeader() == EChatHeaders.MSG) { // Display chat history
                         Platform.runLater(() -> {
                             String chatHistory = msg.getBody().toString();
                             if(chatHistory.equals("")) return;
@@ -196,7 +196,7 @@ public class ChatSceneController {
 
     public void txtMsgOnAction(ActionEvent event) {
         try {
-            EchatMessage msg = new EchatMessage(EchatHeaders.MSG, txtMsg.getText());
+            EChatMessage msg = new EChatMessage(EChatHeaders.MSG, txtMsg.getText());
             oos.writeObject(msg);
             oos.flush();
             txtMsg.textProperty().unbind();
