@@ -1,4 +1,4 @@
-# Chat App
+# ConvoMart Chat Application
 A simple public chat application for desktop. The data is shared having an active connection opened between the client and the server according to the **client-server architecture**.
 This allows real-time communication using TCP sockets and an **application layer protocol** which was defined on TCP
 
