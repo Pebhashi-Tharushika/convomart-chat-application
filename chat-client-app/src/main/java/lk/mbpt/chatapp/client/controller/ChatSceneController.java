@@ -2,15 +2,14 @@ package lk.mbpt.chatapp.client.controller;
 
 
 import javafx.application.Platform;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
@@ -18,11 +17,19 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Callback;
 import lk.mbpt.chatapp.shared.EChatHeaders;
 import lk.mbpt.chatapp.shared.EChatMessage;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.nodes.Node;
+import org.jsoup.nodes.TextNode;
+import org.jsoup.select.NodeVisitor;
 
 import java.io.*;
 import java.net.Socket;
@@ -31,20 +38,21 @@ import java.util.ArrayList;
 public class ChatSceneController {
     public Label txtUserName;
     public ListView<String> lstUsers;
-    public TextField txtMsg;
     public ImageView imgSend;
     public VBox vboxChatArea;
     public AnchorPane rootPane;
     public ImageView imgEmoji;
     public ScrollPane scrollPaneChatArea;
+    public VBox textAreaPlaceholder;
 
     private Socket socket;
     private ObjectOutputStream oos;
     private ObjectInputStream ois;
     private String username;
-    emojiSceneController ctrl = null;
+    private WebEngine webEngine;
+    EmojiListController ctrl = null;
 
-    public void initData(String username){
+    public void initData(String username) {
         this.username = username;
         txtUserName.setText(username);
         controlChatAreaSize();
@@ -70,7 +78,7 @@ public class ChatSceneController {
         lstUsers.setCellFactory(new Callback<ListView<String>, ListCell<String>>() {
             @Override
             public ListCell<String> call(ListView<String> stringListView) {
-                return new ListCell<>() {
+                return new ListCell<String>() {
                     @Override
                     protected void updateItem(String text, boolean empty) {
                         super.updateItem(text, empty);
@@ -78,7 +86,7 @@ public class ChatSceneController {
                             setGraphic(new Circle(5, Color.LIMEGREEN));
                             setGraphicTextGap(7.5);
                             setText(text);
-                        }else {
+                        } else {
                             setGraphic(null);
                             setText(null);
                         }
@@ -86,6 +94,13 @@ public class ChatSceneController {
                 };
             }
         });
+    }
+
+    public void initialize() {
+        WebView webView = new WebView();
+        webEngine = webView.getEngine();
+        webEngine.loadContent(getHtmlContent());
+        textAreaPlaceholder.getChildren().add(webView);
     }
 
     private void connect() {
@@ -106,9 +121,9 @@ public class ChatSceneController {
     }
 
     private void closeSocketOnStageCloseRequest() {
-        txtMsg.getScene().getWindow().setOnCloseRequest(event -> {
+        imgSend.getScene().getWindow().setOnCloseRequest(event -> {
             try {
-                if(ctrl!=null) ctrl.pane.getScene().getWindow().hide();
+                if (ctrl != null) ctrl.emojiVBox.getScene().getWindow().hide();
                 oos.writeObject(new EChatMessage(EChatHeaders.EXIT, null));
                 oos.flush();
                 if (!socket.isClosed()) socket.close();
@@ -134,7 +149,7 @@ public class ChatSceneController {
                     } else if (msg.getHeader() == EChatHeaders.MSG) { // Display chat history
                         Platform.runLater(() -> {
                             String chatHistory = msg.getBody().toString();
-                            if(chatHistory.equals("")) return;
+                            if (chatHistory.equals("")) return;
 
                             vboxChatArea.getChildren().clear();
 
@@ -144,14 +159,14 @@ public class ChatSceneController {
                                 String textOwner = arr[0];
                                 txt = arr[1];
 
-                                Text text = new Text(txt);
-                                text.getStyleClass().add("message");
-                                Text txtName = (!textOwner.equalsIgnoreCase(txtUserName.getText())) ? new Text(textOwner + "\n") : new Text("You\n") ;
-                                txtName.getStyleClass().add("txtName");
-
                                 TextFlow tempFlow = new TextFlow();
+
+                                Text txtName = (!textOwner.equalsIgnoreCase(txtUserName.getText())) ? new Text(textOwner + "\n") : new Text("You\n");
+                                txtName.getStyleClass().add("txtName");
                                 tempFlow.getChildren().add(txtName);
-                                tempFlow.getChildren().add(text);
+
+                                parseHtmlToTextFlow(txt, tempFlow);
+
                                 tempFlow.setMaxWidth(200);
 
                                 TextFlow flow = new TextFlow(tempFlow);
@@ -194,56 +209,146 @@ public class ChatSceneController {
         }).start();
     }
 
-    public void txtMsgOnAction(ActionEvent event) {
+    public static void parseHtmlToTextFlow(String htmlContent, TextFlow textFlow) {
+        Document doc = Jsoup.parse(htmlContent); // Parse the HTML content using JSoup
+
+        // Traverse each node in the HTML
+        doc.body().traverse(new NodeVisitor() {
+            @Override
+            public void head(Node node, int depth) {
+                if (node instanceof TextNode) {
+                    // For plain text nodes, add as Text in TextFlow
+                    TextNode textNode = (TextNode) node;
+                    Text text = new Text(textNode.text());
+                    text.getStyleClass().add("message");
+                    textFlow.getChildren().add(text);
+                } else if (node instanceof Element) {
+                    Element element = (Element) node;
+                    if (element.tagName().equals("img") && element.hasAttr("src")) {
+                        // For <img> tags, load the image and add as ImageView in TextFlow
+                        String imageUrl = element.attr("src");
+                        try {
+                            Image image = new Image(imageUrl, true);
+                            ImageView imageView = new ImageView(image);
+                            imageView.setFitHeight(20);  // Adjust emoji/image size as needed
+                            imageView.setPreserveRatio(true);
+                            textFlow.getChildren().add(imageView);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            System.out.println("Failed to load image from URL: " + imageUrl);
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void tail(Node node, int depth) {
+                // Optional: Handle closing tags or further processing if needed
+            }
+        });
+    }
+
+    public void imgSendOnMouseClicked(MouseEvent event) {
         try {
-            EChatMessage msg = new EChatMessage(EChatHeaders.MSG, txtMsg.getText());
+            String message = (String) webEngine.executeScript("getContent()");  // Get HTML content from the WebView
+            EChatMessage msg = new EChatMessage(EChatHeaders.MSG, message);
             oos.writeObject(msg);
             oos.flush();
-            txtMsg.textProperty().unbind();
-            txtMsg.clear();
+            webEngine.executeScript("document.getElementById('editor').innerHTML = '';"); // Clear the content in the WebView and clear the editor
+
         } catch (IOException e) {
             new Alert(Alert.AlertType.ERROR, "Failed to connect to the server, try again").show();
             e.printStackTrace();
         }
     }
 
-    public void imgSendOnMouseClicked(MouseEvent event) {
-        txtMsg.fireEvent(new ActionEvent());
-    }
-
-
     public void imgEmojiOnMouseClicked(MouseEvent event) throws IOException {
-        if(ctrl ==null){
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/scene/emojiScene.fxml"));
+        if (ctrl == null) {
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/scene/EmojiList.fxml"));
             Parent root = fxmlLoader.load();
 
             ctrl = fxmlLoader.getController();
-            SimpleStringProperty observable = new SimpleStringProperty(txtMsg.getText());
-            txtMsg.textProperty().bind(observable);
-
-            ctrl.initData(observable);
+            ctrl.setChatController(this);
 
             Scene scene = new Scene(root);
             Stage stage = new Stage();
             stage.initStyle(StageStyle.UNDECORATED);
+            stage.setResizable(false);
+            stage.initOwner(rootPane.getScene().getWindow());
             stage.setScene(scene);
 
-            stage.setX(event.getScreenX() - 625);
-            stage.setY(event.getScreenY() - 150);
+            stage.setX(event.getScreenX() - 410);
+            stage.setY(event.getScreenY() - 235);
 
             stage.show();
-        }else{
-            ctrl.pane.getScene().getWindow().hide();
+        } else {
+            ctrl.emojiVBox.getScene().getWindow().hide();
             ctrl = null;
         }
 
     }
 
-    private void controlChatAreaSize(){
+    public WebEngine getWebEngine() {
+        return webEngine;
+    }
+
+    private void controlChatAreaSize() {
         scrollPaneChatArea.layoutBoundsProperty().addListener((obs, previous, current) -> {
             // Resize chat area automatically
-            vboxChatArea.setPrefWidth(scrollPaneChatArea.getWidth()-20);
-            vboxChatArea.setPrefHeight(scrollPaneChatArea.getHeight()-2);
+            vboxChatArea.setPrefWidth(scrollPaneChatArea.getWidth() - 20);
+            vboxChatArea.setPrefHeight(scrollPaneChatArea.getHeight() - 2);
         });
     }
+
+    public String getHtmlContent() {
+        return "<!DOCTYPE html>" +
+                "<html><head><title>Rich Text Editor</title>" +
+                "<style>" +
+                "body { font-family: Arial, sans-serif; min-height: 100vh; display: flex; align-items: center; background-color: #383a50; margin: 0; padding-left:5px;} " +
+                "#editor { width: 100%; flex: 1; overflow-y: auto; background-color: #cad0db; height:35px; padding: 0px 15px; border-radius:35px; border: none; outline: none; box-sizing: border-box;} " +
+                "#editor::-webkit-scrollbar { display: none;}" + // Hide scrollbar
+                "#editor { scrollbar-width: none;}" + // Hide scrollbar for Firefox
+                "#editor p,\n" +
+                "#editor h1,\n" +
+                "#editor h2,\n" +
+                "#editor h3,\n" +
+                "#editor h4,\n" +
+                "#editor h5,\n" +
+                "#editor h6 {\n" +
+                "    margin: 0; \n" + // Remove default margins
+                "    padding: 0; \n" + // Remove default padding
+                "}" +
+                ".emoji { width: 20px; height: 20px; vertical-align: middle;}" +
+                "        .text {\n" + // Class for text styling
+                "            font-size: 16px; \n" + // Set font size for text
+                "            line-height: 20px; \n" + // Line height for vertical spacing
+                "            display: inline-flex; \n" + // Inline flex for vertical alignment
+                "            align-items: center; \n" + // Center align items
+                "        }\n" +
+                "</style>" +
+                "</head><body>" +
+                "    <div id=\"editor\" contenteditable=\"true\"></div>\n" +
+                "    <script>\n" +
+                "        document.getElementById('editor').addEventListener('keydown', function(e) {\n" +
+                "            if (e.key === 'Enter') {\n" +
+                "                e.preventDefault();\n" +     // Prevent the default action (newline)
+                "                sendMessage();\n" +    // Call Java method to send message
+                "            }\n" +
+                "        });\n" +
+                "        function sendMessage() {\n" +
+                "            var content = getContent();\n" +   // Call Java to handle sending the message
+                "            var javaMethod = 'txtMsgOnAction(new ActionEvent());';\n" +
+                "            javaMethod();\n" +
+                "        }\n" +
+                "        function insertEmoji(imgUrl) {\n" +
+                "    var img = document.createElement('img'); img.src = imgUrl; img.className = 'emoji';" +
+                "    document.getElementById('editor').appendChild(img);" +
+                "        }\n" +
+                "        function getContent() {\n" +
+                "            return document.getElementById('editor').innerHTML;\n" + // Return the HTML content of the editor, including emojis
+                "        }\n" +
+                "    </script>\n" +
+                "</body></html>";
+    }
+
 }

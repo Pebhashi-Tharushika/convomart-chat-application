@@ -4,7 +4,6 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -21,8 +20,8 @@
       </Label>
       <HBox alignment="CENTER" layoutY="752.0" prefHeight="79.0" prefWidth="776.0" spacing="10.0" style="-fx-background-color: #383a50;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
          <children>
-            <TextField fx:id="txtMsg" onAction="#txtMsgOnAction" prefHeight="47.0" prefWidth="326.0" promptText="Text..." style="-fx-border-radius: 20px; -fx-background-radius: 20px; -fx-background-color: #cad0db;" HBox.hgrow="ALWAYS" />
-            <ImageView fx:id="imgEmoji" fitHeight="35.0" fitWidth="35.0" onMouseClicked="#imgEmojiOnMouseClicked" pickOnBounds="true" preserveRatio="true">
+            <VBox fx:id="textAreaPlaceholder" alignment="CENTER_LEFT" prefHeight="79.0" prefWidth="681.0" style="-fx-background-color: #383a50;" HBox.hgrow="ALWAYS" />
+            <ImageView fx:id="imgEmoji" fitHeight="43.0" fitWidth="43.0" onMouseClicked="#imgEmojiOnMouseClicked" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@../icon/emoji.png" />
                </image>

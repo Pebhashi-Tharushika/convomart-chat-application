@@ -9,10 +9,9 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-
 <BorderPane fx:id="borderPane" prefHeight="919.0" prefWidth="646.0" style="-fx-background-color: #383a50;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="lk.mbpt.chatapp.client.controller.loginSceneController">
    <center>
-      <Pane maxHeight="720.0" maxWidth="400.0" prefHeight="720.0" prefWidth="400.0" style="-fx-background-color: linear-gradient(to left, rgba(34,193,195,1), rgba(253, 187, 45,1)); -fx-background-radius: 0 100px 0 120px;" BorderPane.alignment="CENTER">
+      <Pane maxHeight="720.0" maxWidth="400.0" prefHeight="720.0" prefWidth="400.0" style="-fx-background-color: linear-gradient(to left, #37ecba 0%, #72afd3 100%); -fx-background-radius: 0 100px 0 120px;" BorderPane.alignment="CENTER">
          <children>
             <Label layoutX="123.0" layoutY="295.0" text="Enter UserName" textFill="WHITE">
                <font>
