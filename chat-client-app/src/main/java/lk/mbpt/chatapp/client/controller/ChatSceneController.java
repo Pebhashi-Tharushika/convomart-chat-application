@@ -1,6 +1,7 @@
 package lk.mbpt.chatapp.client.controller;
 
 
+import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -22,6 +23,7 @@ import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Callback;
+import javafx.util.Duration;
 import lk.mbpt.chatapp.shared.EChatHeaders;
 import lk.mbpt.chatapp.shared.EChatMessage;
 import org.jsoup.Jsoup;
@@ -50,6 +52,10 @@ public class ChatSceneController {
     private ObjectInputStream ois;
     private String username;
     private WebEngine webEngine;
+    private Stage emojiStage;
+    private Stage ownerStage;
+    private PauseTransition pauseTransition = new PauseTransition(Duration.millis(50)); // Adjust delay if needed
+
     EmojiListController ctrl = null;
 
     public void initData(String username) {
@@ -263,6 +269,58 @@ public class ChatSceneController {
     }
 
     public void imgEmojiOnMouseClicked(MouseEvent event) throws IOException {
+    if (emojiStage == null || !emojiStage.isShowing()) {  // Load EmojiList.fxml only if the emoji list is not already showing
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/scene/EmojiList.fxml"));
+        Parent root = fxmlLoader.load();
+
+        ctrl = fxmlLoader.getController();
+        ctrl.setChatController(this);
+
+        Scene scene = new Scene(root);
+        emojiStage = new Stage();
+        emojiStage.setWidth(390);
+        emojiStage.initStyle(StageStyle.UNDECORATED);
+        emojiStage.setResizable(false);
+        emojiStage.initOwner(rootPane.getScene().getWindow());
+        emojiStage.setScene(scene);
+
+        ownerStage = (Stage) rootPane.getScene().getWindow();
+
+        updateEmojiStagePosition(); // Position emoji list near the imgEmoji icon
+        emojiStage.show();
+
+         // Listen for size changes of the chatScene
+        ownerStage.widthProperty().addListener((obs, oldVal, newVal) -> updateEmojiStagePosition());
+        ownerStage.heightProperty().addListener((obs, oldVal, newVal) -> updateEmojiStagePosition());
+
+        // Move emoji list along with `chatScene`
+        ownerStage.xProperty().addListener((obs, oldVal, newVal) -> updateEmojiStagePosition());
+        ownerStage.yProperty().addListener((obs, oldVal, newVal) -> updateEmojiStagePosition());
+
+        // Listen for Maximize of the chatScene
+        ownerStage.maximizedProperty().addListener((obs, oldVal, newVal) -> {
+            pauseTransition.setOnFinished(e -> updateEmojiStagePosition());
+            pauseTransition.playFromStart();
+        });
+
+    } else {
+        // Hide the emoji stage if it's already open
+        emojiStage.hide();
+        emojiStage = null;
+    }
+}
+
+// Method to update the emoji list position based on `chatScene` and `imgEmoji` position
+private void updateEmojiStagePosition() {
+       if( emojiStage== null ) return;
+    // Position the emoji stage near imgEmoji
+    double emojiButtonX = imgEmoji.localToScene(0, 0).getX() + ownerStage.getX();
+    double emojiButtonY = imgEmoji.localToScene(0, 0).getY() + ownerStage.getY();
+
+    emojiStage.setX(emojiButtonX - 380);
+    emojiStage.setY(emojiButtonY - 235);
+}
+    /*public void imgEmojiOnMouseClicked(MouseEvent event) throws IOException {
         if (ctrl == null) {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/scene/EmojiList.fxml"));
             Parent root = fxmlLoader.load();
@@ -272,11 +330,11 @@ public class ChatSceneController {
 
             Scene scene = new Scene(root);
             Stage stage = new Stage();
+            stage.setWidth(390);
             stage.initStyle(StageStyle.UNDECORATED);
             stage.setResizable(false);
             stage.initOwner(rootPane.getScene().getWindow());
             stage.setScene(scene);
-
             stage.setX(event.getScreenX() - 410);
             stage.setY(event.getScreenY() - 235);
 
@@ -287,7 +345,7 @@ public class ChatSceneController {
         }
 
     }
-
+*/
     public WebEngine getWebEngine() {
         return webEngine;
     }
