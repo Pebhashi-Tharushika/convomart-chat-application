@@ -222,6 +222,10 @@ public class ChatSceneController {
         doc.body().traverse(new NodeVisitor() {
             @Override
             public void head(Node node, int depth) {
+
+                if(node instanceof  Element && ((Element)node).tagName().equals("div")){
+                    textFlow.getChildren().add(new Text("\n"));
+                }
                 if (node instanceof TextNode) {
                     // For plain text nodes, add as Text in TextFlow
                     TextNode textNode = (TextNode) node;
@@ -236,7 +240,7 @@ public class ChatSceneController {
                         try {
                             Image image = new Image(imageUrl, true);
                             ImageView imageView = new ImageView(image);
-                            imageView.setFitHeight(20);  // Adjust emoji/image size as needed
+                            imageView.setFitHeight(16);  // Adjust emoji/image size as needed
                             imageView.setPreserveRatio(true);
                             textFlow.getChildren().add(imageView);
                         } catch (Exception e) {
@@ -269,59 +273,7 @@ public class ChatSceneController {
     }
 
     public void imgEmojiOnMouseClicked(MouseEvent event) throws IOException {
-    if (emojiStage == null || !emojiStage.isShowing()) {  // Load EmojiList.fxml only if the emoji list is not already showing
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/scene/EmojiList.fxml"));
-        Parent root = fxmlLoader.load();
-
-        ctrl = fxmlLoader.getController();
-        ctrl.setChatController(this);
-
-        Scene scene = new Scene(root);
-        emojiStage = new Stage();
-        emojiStage.setWidth(390);
-        emojiStage.initStyle(StageStyle.UNDECORATED);
-        emojiStage.setResizable(false);
-        emojiStage.initOwner(rootPane.getScene().getWindow());
-        emojiStage.setScene(scene);
-
-        ownerStage = (Stage) rootPane.getScene().getWindow();
-
-        updateEmojiStagePosition(); // Position emoji list near the imgEmoji icon
-        emojiStage.show();
-
-         // Listen for size changes of the chatScene
-        ownerStage.widthProperty().addListener((obs, oldVal, newVal) -> updateEmojiStagePosition());
-        ownerStage.heightProperty().addListener((obs, oldVal, newVal) -> updateEmojiStagePosition());
-
-        // Move emoji list along with `chatScene`
-        ownerStage.xProperty().addListener((obs, oldVal, newVal) -> updateEmojiStagePosition());
-        ownerStage.yProperty().addListener((obs, oldVal, newVal) -> updateEmojiStagePosition());
-
-        // Listen for Maximize of the chatScene
-        ownerStage.maximizedProperty().addListener((obs, oldVal, newVal) -> {
-            pauseTransition.setOnFinished(e -> updateEmojiStagePosition());
-            pauseTransition.playFromStart();
-        });
-
-    } else {
-        // Hide the emoji stage if it's already open
-        emojiStage.hide();
-        emojiStage = null;
-    }
-}
-
-// Method to update the emoji list position based on `chatScene` and `imgEmoji` position
-private void updateEmojiStagePosition() {
-       if( emojiStage== null ) return;
-    // Position the emoji stage near imgEmoji
-    double emojiButtonX = imgEmoji.localToScene(0, 0).getX() + ownerStage.getX();
-    double emojiButtonY = imgEmoji.localToScene(0, 0).getY() + ownerStage.getY();
-
-    emojiStage.setX(emojiButtonX - 380);
-    emojiStage.setY(emojiButtonY - 235);
-}
-    /*public void imgEmojiOnMouseClicked(MouseEvent event) throws IOException {
-        if (ctrl == null) {
+        if (emojiStage == null || !emojiStage.isShowing()) {  // Load EmojiList.fxml only if the emoji list is not already showing
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/scene/EmojiList.fxml"));
             Parent root = fxmlLoader.load();
 
@@ -329,23 +281,50 @@ private void updateEmojiStagePosition() {
             ctrl.setChatController(this);
 
             Scene scene = new Scene(root);
-            Stage stage = new Stage();
-            stage.setWidth(390);
-            stage.initStyle(StageStyle.UNDECORATED);
-            stage.setResizable(false);
-            stage.initOwner(rootPane.getScene().getWindow());
-            stage.setScene(scene);
-            stage.setX(event.getScreenX() - 410);
-            stage.setY(event.getScreenY() - 235);
+            emojiStage = new Stage();
+            emojiStage.setWidth(390);
+            emojiStage.initStyle(StageStyle.UNDECORATED);
+            emojiStage.setResizable(false);
+            emojiStage.initOwner(rootPane.getScene().getWindow());
+            emojiStage.setScene(scene);
 
-            stage.show();
+            ownerStage = (Stage) rootPane.getScene().getWindow();
+
+            updateEmojiStagePosition(); // Position emoji list near the imgEmoji icon
+            emojiStage.show();
+
+            // Listen for size changes of the chatScene
+            ownerStage.widthProperty().addListener((obs, oldVal, newVal) -> updateEmojiStagePosition());
+            ownerStage.heightProperty().addListener((obs, oldVal, newVal) -> updateEmojiStagePosition());
+
+            // Move emoji list along with `chatScene`
+            ownerStage.xProperty().addListener((obs, oldVal, newVal) -> updateEmojiStagePosition());
+            ownerStage.yProperty().addListener((obs, oldVal, newVal) -> updateEmojiStagePosition());
+
+            // Listen for Maximize of the chatScene
+            ownerStage.maximizedProperty().addListener((obs, oldVal, newVal) -> {
+                pauseTransition.setOnFinished(e -> updateEmojiStagePosition());
+                pauseTransition.playFromStart();
+            });
+
         } else {
-            ctrl.emojiVBox.getScene().getWindow().hide();
-            ctrl = null;
+            // Hide the emoji stage if it's already open
+            emojiStage.hide();
+            emojiStage = null;
         }
-
     }
-*/
+
+    // Method to update the emoji list position based on `chatScene` and `imgEmoji` position
+    private void updateEmojiStagePosition() {
+        if (emojiStage == null) return;
+        // Position the emoji stage near imgEmoji
+        double emojiButtonX = imgEmoji.localToScene(0, 0).getX() + ownerStage.getX();
+        double emojiButtonY = imgEmoji.localToScene(0, 0).getY() + ownerStage.getY();
+
+        emojiStage.setX(emojiButtonX - 380);
+        emojiStage.setY(emojiButtonY - 235);
+    }
+
     public WebEngine getWebEngine() {
         return webEngine;
     }
@@ -363,44 +342,17 @@ private void updateEmojiStagePosition() {
                 "<html><head><title>Rich Text Editor</title>" +
                 "<style>" +
                 "body { font-family: Arial, sans-serif; min-height: 100vh; display: flex; align-items: center; background-color: #383a50; margin: 0; padding-left:5px;} " +
-                "#editor { width: 100%; flex: 1; overflow-y: auto; background-color: #cad0db; height:35px; padding: 0px 15px; border-radius:35px; border: none; outline: none; box-sizing: border-box;} " +
+                "#editor { width: 100%; flex: 1; overflow-y: auto; background-color: #cad0db; height:35px; padding: 0px 15px; border-radius:35px; outline: none; box-sizing: border-box; font-size: 20px;} " +
                 "#editor::-webkit-scrollbar { display: none;}" + // Hide scrollbar
                 "#editor { scrollbar-width: none;}" + // Hide scrollbar for Firefox
-                "#editor p,\n" +
-                "#editor h1,\n" +
-                "#editor h2,\n" +
-                "#editor h3,\n" +
-                "#editor h4,\n" +
-                "#editor h5,\n" +
-                "#editor h6 {\n" +
-                "    margin: 0; \n" + // Remove default margins
-                "    padding: 0; \n" + // Remove default padding
-                "}" +
                 ".emoji { width: 20px; height: 20px; vertical-align: middle;}" +
-                "        .text {\n" + // Class for text styling
-                "            font-size: 16px; \n" + // Set font size for text
-                "            line-height: 20px; \n" + // Line height for vertical spacing
-                "            display: inline-flex; \n" + // Inline flex for vertical alignment
-                "            align-items: center; \n" + // Center align items
-                "        }\n" +
                 "</style>" +
                 "</head><body>" +
                 "    <div id=\"editor\" contenteditable=\"true\"></div>\n" +
                 "    <script>\n" +
-                "        document.getElementById('editor').addEventListener('keydown', function(e) {\n" +
-                "            if (e.key === 'Enter') {\n" +
-                "                e.preventDefault();\n" +     // Prevent the default action (newline)
-                "                sendMessage();\n" +    // Call Java method to send message
-                "            }\n" +
-                "        });\n" +
-                "        function sendMessage() {\n" +
-                "            var content = getContent();\n" +   // Call Java to handle sending the message
-                "            var javaMethod = 'txtMsgOnAction(new ActionEvent());';\n" +
-                "            javaMethod();\n" +
-                "        }\n" +
                 "        function insertEmoji(imgUrl) {\n" +
-                "    var img = document.createElement('img'); img.src = imgUrl; img.className = 'emoji';" +
-                "    document.getElementById('editor').appendChild(img);" +
+                "           var imgTag = '<img src=\"' + imgUrl + '\" class=\"emoji\">';" +
+                "           document.execCommand('insertHTML', false, imgTag);"+ // Insert the emoji at the current cursor position
                 "        }\n" +
                 "        function getContent() {\n" +
                 "            return document.getElementById('editor').innerHTML;\n" + // Return the HTML content of the editor, including emojis

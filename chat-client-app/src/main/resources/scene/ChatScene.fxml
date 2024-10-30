@@ -38,7 +38,7 @@
       </HBox>
       <ScrollPane fx:id="scrollPaneChatArea" hbarPolicy="NEVER" layoutX="10.0" layoutY="65.0" prefHeight="677.0" prefWidth="541.0" AnchorPane.bottomAnchor="89.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="225.0" AnchorPane.topAnchor="65.0">
          <content>
-            <VBox fx:id="vboxChatArea" fillWidth="false" prefHeight="675.0" prefWidth="521.0" style="-fx-background-color: linear-gradient(to right,  #383a50, rgba(255, 255, 255,1));" />
+            <VBox fx:id="vboxChatArea" fillWidth="false" prefHeight="675.0" prefWidth="521.0" style="-fx-background-color: linear-gradient(to right,  #383a50, rgba(244, 244, 244,1));" />
          </content>
       </ScrollPane>
       <ListView fx:id="lstUsers" focusTraversable="false" layoutX="561.0" layoutY="65.0" prefHeight="677.0" prefWidth="205.0" AnchorPane.bottomAnchor="89.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="65.0" />
