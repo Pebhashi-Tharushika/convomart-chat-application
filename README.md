@@ -31,7 +31,8 @@ Ideal for online communities, remote teams, or casual chatting with friends, Con
 - JavaFX (OpenJFX): Gluon Scene Builder
 
 ### Application Preview
-![](asset/login-page.png)
+<img src="asset/login-page.png" alt="Login Page" width="500"/>
+
 ![](asset/chat-view.png)
 ![](asset/emoji-pane.gif)
 
