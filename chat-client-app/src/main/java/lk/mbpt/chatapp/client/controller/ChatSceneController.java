@@ -321,8 +321,8 @@ public class ChatSceneController {
         double emojiButtonX = imgEmoji.localToScene(0, 0).getX() + ownerStage.getX();
         double emojiButtonY = imgEmoji.localToScene(0, 0).getY() + ownerStage.getY();
 
-        emojiStage.setX(emojiButtonX - 380);
-        emojiStage.setY(emojiButtonY - 235);
+        emojiStage.setX(emojiButtonX - 365);
+        emojiStage.setY(emojiButtonY - 190);
     }
 
     public WebEngine getWebEngine() {

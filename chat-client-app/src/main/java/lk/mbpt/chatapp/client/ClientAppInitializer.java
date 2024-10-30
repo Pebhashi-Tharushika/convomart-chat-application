@@ -20,7 +20,7 @@ public class ClientAppInitializer extends Application {
         BorderPane root = fxmlLoader.load();
         Scene chatScene = new Scene(root);
         primaryStage.setScene(chatScene);
-        primaryStage.setTitle("Chat App");
+        primaryStage.setTitle("ConvoMart");
         primaryStage.show();
         primaryStage.centerOnScreen();
     }
