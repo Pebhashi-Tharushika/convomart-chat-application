@@ -107,6 +107,10 @@ public class ChatSceneController {
         webEngine = webView.getEngine();
         webEngine.loadContent(getHtmlContent());
         textAreaPlaceholder.getChildren().add(webView);
+
+        vboxChatArea.heightProperty().addListener((observable, oldValue, newValue) -> {
+            scrollPaneChatArea.setVvalue(1.0); // Scrolls to the bottom
+        });
     }
 
     private void connect() {
@@ -223,7 +227,7 @@ public class ChatSceneController {
             @Override
             public void head(Node node, int depth) {
 
-                if(node instanceof  Element && ((Element)node).tagName().equals("div")){
+                if (node instanceof Element && ((Element) node).tagName().equals("div")) {
                     textFlow.getChildren().add(new Text("\n"));
                 }
                 if (node instanceof TextNode) {
@@ -352,7 +356,7 @@ public class ChatSceneController {
                 "    <script>\n" +
                 "        function insertEmoji(imgUrl) {\n" +
                 "           var imgTag = '<img src=\"' + imgUrl + '\" class=\"emoji\">';" +
-                "           document.execCommand('insertHTML', false, imgTag);"+ // Insert the emoji at the current cursor position
+                "           document.execCommand('insertHTML', false, imgTag);" + // Insert the emoji at the current cursor position
                 "        }\n" +
                 "        function getContent() {\n" +
                 "            return document.getElementById('editor').innerHTML;\n" + // Return the HTML content of the editor, including emojis
